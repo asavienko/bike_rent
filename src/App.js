@@ -46,47 +46,54 @@ const dataFromServer = [
   }
 ];
 
-const generateId = () => Math.ceil(Math.random() * 10 * Math.pow(10, 6));
+const generateId = () => Math.ceil(Math.random() * 10 * Math.pow(10, 6)); //todo generate in backend side
 
 const App = () => {
-  const [arrOfBikes, setArrOfBikes] = useState([]);
+  const [availableBikes, setAvailableBikes] = useState([]);
+  const [rentedBikes, setRentedBikes] = useState([]);
 
   useEffect(() => {
-    if (!arrOfBikes.length) {
-      Promise.resolve(dataFromServer).then(arrOfBikesWithPrice =>
-        setArrOfBikes(arrOfBikesWithPrice)
-      );
-    }
-  }, [arrOfBikes]);
-
-  const onFormSubmit = bikeObj => {
-    bikeObj.id = generateId();
-    setArrOfBikes([...arrOfBikes, bikeObj]);
-  };
-
-  const onCancelRent = id => {
-    const changeList = arrOfBikes.map(bike => {
-      if (bike.id === id) {
-        bike.available = true;
-      }
-      return bike;
+    Promise.resolve(dataFromServer).then(dataFromServer => {
+      const availableBikesFromServer = [];
+      const rentedBikesFromServer = [];
+      dataFromServer.forEach(({ available, ...bike }) => {
+        available
+          ? availableBikesFromServer.push(bike)
+          : rentedBikesFromServer.push(bike);
+      });
+      setAvailableBikes(availableBikesFromServer);
+      setRentedBikes(rentedBikesFromServer);
     });
-    setArrOfBikes(changeList);
+  }, []);
+
+  const onBikeCreate = bikeObj => {
+    bikeObj.id = generateId(); // todo the same as above
+    setAvailableBikes([...availableBikes, bikeObj]);
   };
-  const onDeleteBike = id => {};
-  const onRent = id => {
-    /* const changeList = arrOfBikes.map(bike =>
-      bike.id === id ? (bike.available = false) : bike
-    );
-    setArrOfBikes(changeList);*/
+
+  const onCancelRent = bike => {
+    const filteredBikes = rentedBikes.filter(item => item.id !== bike.id);
+    setAvailableBikes([...availableBikes, bike]);
+    setRentedBikes(filteredBikes);
+  };
+  const onDeleteBike = id => {
+    const filteredBikes = availableBikes.filter(item => item.id !== id);
+    setAvailableBikes(filteredBikes);
+  };
+  const onRent = bike => {
+    const filteredBikes = availableBikes.filter(item => item.id !== bike.id);
+    bike.takenDate = new Date();
+    setAvailableBikes(filteredBikes);
+    setRentedBikes([...rentedBikes, bike]);
   };
 
   return (
     <StyledApp>
       <h1>Awesome Bike Rental</h1>
-      <CreateRentForm onFormSubmit={onFormSubmit} />
+      <CreateRentForm onBikeCreate={onBikeCreate} />
       <Rents
-        arrOfBikes={arrOfBikes}
+        availableBikes={availableBikes}
+        rentedBikes={rentedBikes}
         onCancelRent={onCancelRent}
         onDeleteBike={onDeleteBike}
         onRent={onRent}

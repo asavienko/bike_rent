@@ -1,75 +1,115 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyledItem } from "./Rents.styles";
 import { StyledButton } from "../../styles/index.styles";
+import { calculatePrice, toFloatNumber } from "../../utiles";
+import Modal from "./Modal/Modal";
 
-const Rents = ({ arrOfBikes, onCancelRent, onDeleteBike, onRent }) => {
-  const mapRentedBikes = ({
-    name,
-    type,
-    takenDate,
-    pricePerHour,
-    available,
-    id
-  }) =>
-    !available && (
-      <StyledItem key={id}>
-        <span>
-          {name} / {type} / $
-          {(((new Date() - takenDate) * pricePerHour) / (3600 * 1000)).toFixed(
-            2
-          )}
-        </span>
+const Rents = ({
+  rentedBikes,
+  availableBikes,
+  onCancelRent,
+  onDeleteBike,
+  onRent
+}) => {
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    if (rentedBikes.length) {
+      const countedPrice = rentedBikes.reduce(
+        (acc, bike) =>
+          acc +
+          calculatePrice({
+            takenDate: bike.takenDate,
+            pricePerHour: bike.pricePerHour
+          }),
+        0
+      );
+      return setTotalPrice(toFloatNumber(countedPrice));
+    }
+    setTotalPrice(0);
+  }, [rentedBikes]);
+
+  const [displayModal, setDisplayModal] = useState(false);
+  const [modalContent, setModalContent] = useState({});
+
+  const onDeleteClick = bike => {
+    setModalContent(bike);
+    setDisplayModal(true);
+  };
+  const onModalClose = () => {
+    setDisplayModal(false);
+  };
+  const onModalConfirm = () => {
+    onDeleteBike(modalContent.id);
+    setDisplayModal(false);
+  };
+
+  const mapRentedBikes = bike => (
+    <StyledItem key={bike.id}>
+      <span>
+        {bike.name} / {bike.type} / $
+        {toFloatNumber(
+          calculatePrice({
+            takenDate: bike.takenDate,
+            pricePerHour: bike.pricePerHour
+          })
+        )}
+      </span>
+      <StyledButton buttonColor="red" onClick={() => onCancelRent(bike)}>
+        Cancel rent
+      </StyledButton>
+    </StyledItem>
+  );
+
+  const mapAvailableBikes = bike => (
+    <StyledItem key={bike.id}>
+      <span>
+        {bike.name} / {bike.type} / ${bike.pricePerHour}
+      </span>
+      <div>
+        <StyledButton buttonColor="blue" onClick={() => onRent(bike)}>
+          Rent
+        </StyledButton>
         <StyledButton
-          buttonColor={"red"}
-          onClick={e => {
-            e.preventDefault();
-            return onCancelRent(id);
+          buttonColor="red"
+          onClick={() => {
+            onDeleteClick(bike);
           }}
         >
-          Cancel rent
+          Delete
         </StyledButton>
-      </StyledItem>
-    );
-
-  const mapAvailableBikes = ({ name, type, available, id, pricePerHour }) =>
-    available && (
-      <StyledItem key={id}>
-        <span>
-          {name} / {type} / ${pricePerHour}
-        </span>
-        <div>
-          <StyledButton buttonColor={"blue"} ocClick={onRent}>
-            Rent
-          </StyledButton>
-          <StyledButton
-            buttonColor={"red"}
-            onClick={() => {
-              onDeleteBike(id);
-            }}
-          >
-            Delete
-          </StyledButton>
-        </div>
-      </StyledItem>
-    );
+      </div>
+    </StyledItem>
+  );
 
   return (
-    <div>
-      <h3>
-        <span role={"img"} aria-label={"stars"}>
-          🤩
-        </span>
-        Your rent
-      </h3>
-      {arrOfBikes.map(mapRentedBikes)}
-      <h3>
-        <span role={"img"} aria-label={"bicycle"}>
-          🚲
-        </span>
-        Available bicycles
-      </h3>
-      {arrOfBikes.map(mapAvailableBikes)}
-    </div>
+    <>
+      <div>
+        <h3>
+          <span role="img" aria-label="stars">
+            🤩
+          </span>
+          Your rent (Total: ${totalPrice})
+        </h3>
+        {rentedBikes.map(mapRentedBikes)}
+        <h3>
+          <span role="img" aria-label="bicycle">
+            🚲
+          </span>
+          Available bicycles ({availableBikes.length})
+        </h3>
+        {availableBikes.map(mapAvailableBikes)}
+      </div>
+      <Modal
+        display={displayModal}
+        title="Confirm Delete"
+        content={`${modalContent.name} / ${modalContent.type} / $${
+          modalContent.pricePerHour
+        }`}
+        onClose={onModalClose}
+        onSubmit={onModalConfirm}
+      />
+    </>
   );
 };
 

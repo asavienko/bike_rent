@@ -6,10 +6,9 @@ exports.bikeUpdate = function(req, res, next) {
   if (!_id || typeof _id !== "string") {
     return next(new Error());
   }
-  Bike.updateOne({ _id }, { ...req.body })
-    .then(response => {
-      console.log(response);
-      res.sendStatus(200);
+  Bike.updateOne({ _id }, { ...req.body, takenDate: new Date() })
+    .then(() => {
+      res.json("ok");
     })
     .catch(e => next(e));
 };
@@ -22,7 +21,7 @@ exports.bikeDelete = function(req, res, next) {
   }
   Bike.deleteOne({ _id })
     .then(() => {
-      res.sendStatus(200);
+      res.json("ok");
     })
     .catch(e => next(e));
 };

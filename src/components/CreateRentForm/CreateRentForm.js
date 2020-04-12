@@ -6,7 +6,7 @@ import { toFloatNumber } from "../../utiles";
 const CreateRentForm = ({ onBikeCreate }) => {
   const [bikeName, setBikeName] = useState("");
   const [selectedType, setSelectedType] = useState("Mountain");
-  const [price, setPrice] = useState(toFloatNumber(0)); //i use the toFloatNumber method for creating decimal number in input.
+  const [price, setPrice] = useState(toFloatNumber(0)); //the reason of using toFloatNumber is to visualize default float number in input
 
   const onNameChanged = e => setBikeName(e.target.value);
   const onTypeChanged = e => setSelectedType(e.target.value);

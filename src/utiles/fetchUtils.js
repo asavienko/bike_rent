@@ -15,7 +15,7 @@ async function request(url, method, body) {
     return response.json();
   } catch (e) {
     console.error(e);
-    throw new Error(e);
+    throw Error(e);
   }
 }
 

@@ -3,6 +3,7 @@ import { StyledItem } from "./Rents.styles";
 import { StyledButton } from "../../styles/index.styles";
 import { calculatePrice, toFloatNumber } from "../../utiles";
 import Modal from "./Modal/Modal";
+import SpanWithSale from "./SpanWithSale/SpanWithSale";
 
 const Rents = ({
   rentedBikes,
@@ -12,19 +13,32 @@ const Rents = ({
   onRent
 }) => {
   const [totalPrice, setTotalPrice] = useState(0);
+  const [totalDiscountPrice, setTotalDiscountPrice] = useState(0);
+
+
 
   useEffect(() => {
     if (rentedBikes.length) {
-      const countedPrice = rentedBikes.reduce(
-        (acc, bike) =>
-          acc +
-          calculatePrice({
+      const { price, discountPrice } = rentedBikes.reduce(
+        (acc, bike) => {
+          const { price, discountPrice } = calculatePrice({
             takenDate: bike.takenDate,
             pricePerHour: bike.pricePerHour
-          }),
-        0
+          });
+          return discountPrice
+            ? {
+                price: price + acc.price,
+                discountPrice: discountPrice + acc.discountPrice
+              }
+            : {
+                price: price + acc.price,
+                discountPrice: price + acc.discountPrice
+              };
+        },
+        { price: 0, discountPrice: 0 }
       );
-      return setTotalPrice(toFloatNumber(countedPrice));
+      setTotalDiscountPrice(toFloatNumber(discountPrice));
+      return setTotalPrice(toFloatNumber(price));
     }
     setTotalPrice(0);
   }, [rentedBikes]);
@@ -44,23 +58,24 @@ const Rents = ({
     setDisplayModal(false);
   };
 
-  const mapRentedBikes = bike => (
-    <StyledItem key={bike._id}>
-      <span>
-        {bike.name} / {bike.type} / $
-        {toFloatNumber(
-          calculatePrice({
-            takenDate: bike.takenDate,
-            pricePerHour: bike.pricePerHour
-          })
-        )}
-      </span>
-      <StyledButton buttonColor="red" onClick={() => onCancelRent(bike)}>
-        Cancel rent
-      </StyledButton>
-    </StyledItem>
-  );
+  const mapRentedBikes = bike => {
+    const { price, discountPrice } = calculatePrice({
+      takenDate: bike.takenDate,
+      pricePerHour: bike.pricePerHour
+    });
 
+    return (
+      <StyledItem key={bike._id}>
+        <span>
+          {bike.name} / {bike.type} /{" "}
+          <SpanWithSale discountPrice={discountPrice} price={price} />
+        </span>
+        <StyledButton buttonColor="red" onClick={() => onCancelRent(bike)}>
+          Cancel rent
+        </StyledButton>
+      </StyledItem>
+    );
+  };
   const mapAvailableBikes = bike => (
     <StyledItem key={bike._id}>
       <span>
@@ -89,7 +104,9 @@ const Rents = ({
           <span role="img" aria-label="stars">
             🤩
           </span>
-          Your rent (Total: ${totalPrice})
+          Your rent (Total:{" "}
+          <SpanWithSale discountPrice={totalDiscountPrice} price={totalPrice} />
+          )
         </h3>
         {rentedBikes.map(mapRentedBikes)}
         <h3>

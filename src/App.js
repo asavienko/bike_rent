@@ -8,6 +8,7 @@ import {
   postRequest,
   putRequest
 } from "./utiles/fetchUtils";
+import { filterBikeUtil } from "./utiles/index";
 
 const App = () => {
   const [availableBikes, setAvailableBikes] = useState([]);
@@ -15,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     if (!availableBikes.length && !rentedBikes.length) {
-      getRequest("bike").then(dataFromServer => {
+      getRequest("/bike").then(dataFromServer => {
         const availableBikesFromServer = [];
         const rentedBikesFromServer = [];
         dataFromServer.forEach(({ available, ...bike }) => {
@@ -34,46 +35,34 @@ const App = () => {
       .then(bikeFromResponse =>
         setAvailableBikes([...availableBikes, bikeFromResponse])
       )
-      .catch(e => console.log(e));
+      .catch(e => console.error(e));
   };
 
   const onCancelRent = bike => {
     putRequest("/bike", { ...bike, available: true })
-      .then(response => {
-        if (response !== "success") {
-          throw Error(response);
-        }
-        const filteredBikes = rentedBikes.filter(
-          item => item._id !== bike._id
-        );
+      .then(() => {
+        const filteredBikes = rentedBikes.filter(filterBikeUtil(bike._id));
         setAvailableBikes([...availableBikes, bike]);
         setRentedBikes(filteredBikes);
       })
-      .catch(e => console.log(e));
+      .catch(e => console.error(e));
   };
   const onDeleteBike = _id => {
     deleteRequest("/bike", { _id })
-      .then(response => {
-        if (response !== "success") {
-          throw new Error(response);
-        }
-        const filteredBikes = availableBikes.filter(
-          item => item._id !== _id
-        );
+      .then(() => {
+        const filteredBikes = availableBikes.filter(filterBikeUtil(_id));
         setAvailableBikes(filteredBikes);
       })
-      .catch(e => console.log(e));
+      .catch(e => console.error(e));
   };
   const onRent = bike => {
     putRequest("/bike", { ...bike, available: false })
-      .then(responseBike => {
-        const filteredBikes = availableBikes.filter(
-          item => item._id !== responseBike._id
-        );
+      .then(() => {
+        const filteredBikes = availableBikes.filter(filterBikeUtil(bike._id));
         setAvailableBikes(filteredBikes);
-        setRentedBikes([...rentedBikes, bike]);
+        setRentedBikes([...rentedBikes, { ...bike, takenDate: new Date() }]);
       })
-      .catch(e => console.log(e));
+      .catch(e => console.error(e));
   };
 
   return (

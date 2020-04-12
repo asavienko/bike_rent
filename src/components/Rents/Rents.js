@@ -40,12 +40,12 @@ const Rents = ({
     setDisplayModal(false);
   };
   const onModalConfirm = () => {
-    onDeleteBike(modalContent.id);
+    onDeleteBike(modalContent._id);
     setDisplayModal(false);
   };
 
   const mapRentedBikes = bike => (
-    <StyledItem key={bike.id}>
+    <StyledItem key={bike._id}>
       <span>
         {bike.name} / {bike.type} / $
         {toFloatNumber(
@@ -62,7 +62,7 @@ const Rents = ({
   );
 
   const mapAvailableBikes = bike => (
-    <StyledItem key={bike.id}>
+    <StyledItem key={bike._id}>
       <span>
         {bike.name} / {bike.type} / ${bike.pricePerHour}
       </span>

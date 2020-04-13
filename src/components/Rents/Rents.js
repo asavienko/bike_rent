@@ -3,7 +3,7 @@ import { StyledItem } from "./Rents.styles";
 import { StyledButton } from "../../styles/index.styles";
 import { calculatePrice, toFloatNumber } from "../../utiles";
 import Modal from "./Modal/Modal";
-import SpanWithSale from "./SpanWithSale/SpanWithSale";
+import SpanWithDiscount from "./SpanWithDiscount/SpanWithDiscount";
 
 const Rents = ({
   rentedBikes,
@@ -12,36 +12,48 @@ const Rents = ({
   onDeleteBike,
   onRent
 }) => {
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [totalDiscountPrice, setTotalDiscountPrice] = useState(0);
+  const [totalPrice, setTotalPrice] = useState("");
+  const [totalDiscountPrice, setTotalDiscountPrice] = useState("");
+  const [debounceCounter, setDebounceCounter] = useState(0);
 
-
+  useEffect(() => {}, [debounceCounter, rentedBikes.length]);
 
   useEffect(() => {
     if (rentedBikes.length) {
       const { price, discountPrice } = rentedBikes.reduce(
-        (acc, bike) => {
+        (
+          { price: currentPrice, discountPrice: currentDiscountPrice },
+          { takenDate, pricePerHour }
+        ) => {
           const { price, discountPrice } = calculatePrice({
-            takenDate: bike.takenDate,
-            pricePerHour: bike.pricePerHour
+            takenDate,
+            pricePerHour
           });
           return discountPrice
             ? {
-                price: price + acc.price,
-                discountPrice: discountPrice + acc.discountPrice
+                price: currentPrice + Number(price),
+                discountPrice: currentDiscountPrice + Number(discountPrice)
               }
             : {
-                price: price + acc.price,
-                discountPrice: price + acc.discountPrice
+                price: currentPrice + Number(price),
+                discountPrice: currentDiscountPrice + Number(price)
               };
         },
         { price: 0, discountPrice: 0 }
       );
       setTotalDiscountPrice(toFloatNumber(discountPrice));
-      return setTotalPrice(toFloatNumber(price));
+      setTotalPrice(toFloatNumber(price));
+
+      const timeout = setInterval(
+        () => setDebounceCounter(debounceCounter + 1),
+        500
+      );
+      return () => {
+        clearTimeout(timeout);
+      };
     }
-    setTotalPrice(0);
-  }, [rentedBikes]);
+    setTotalPrice("0");
+  }, [rentedBikes, debounceCounter]);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState({});
@@ -68,7 +80,7 @@ const Rents = ({
       <StyledItem key={bike._id}>
         <span>
           {bike.name} / {bike.type} /{" "}
-          <SpanWithSale discountPrice={discountPrice} price={price} />
+          <SpanWithDiscount discountPrice={discountPrice} price={price} />
         </span>
         <StyledButton buttonColor="red" onClick={() => onCancelRent(bike)}>
           Cancel rent
@@ -105,7 +117,10 @@ const Rents = ({
             🤩
           </span>
           Your rent (Total:{" "}
-          <SpanWithSale discountPrice={totalDiscountPrice} price={totalPrice} />
+          <SpanWithDiscount
+            discountPrice={totalDiscountPrice}
+            price={totalPrice}
+          />
           )
         </h3>
         {rentedBikes.map(mapRentedBikes)}

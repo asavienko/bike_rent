@@ -2,91 +2,87 @@ import React, { useEffect, useState } from "react";
 import CreateRentForm from "./components/CreateRentForm/CreateRentForm";
 import { StyledApp } from "./App.styles";
 import Rents from "./components/Rents/Rents";
-
-const dataFromServer = [
-  {
-    id: 1233123,
-    name: "SuperFasts",
-    type: "Custom",
-    pricePerHour: 10,
-    available: false,
-    takenDate: new Date(2020, 3, 9, 17, 45)
-  },
-  {
-    id: 12341231,
-    name: "SuperFasts1",
-    type: "Custom",
-    pricePerHour: 90,
-    available: false,
-    takenDate: new Date(2020, 3, 9, 17, 45)
-  },
-  {
-    id: 12351232,
-    name: "SuperFasts2",
-    type: "Custom",
-    pricePerHour: 90,
-    available: false,
-    takenDate: new Date(2020, 3, 9, 17, 45)
-  },
-  {
-    id: 12316233,
-    name: "SuperFasts2",
-    type: "Custom",
-    pricePerHour: 90,
-    available: true,
-    takenDate: new Date(2020, 3, 9, 17, 45)
-  },
-  {
-    id: 12317234,
-    name: "SuperFasts2",
-    type: "Custom",
-    pricePerHour: 90,
-    available: true,
-    takenDate: new Date(2020, 3, 9, 17, 45)
-  }
-];
-
-const generateId = () => Math.ceil(Math.random() * 10 * Math.pow(10, 6));
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+  putRequest
+} from "./utiles/fetchUtils";
 
 const App = () => {
-  const [arrOfBikes, setArrOfBikes] = useState([]);
+  const [availableBikes, setAvailableBikes] = useState([]);
+  const [rentedBikes, setRentedBikes] = useState([]);
 
   useEffect(() => {
-    if (!arrOfBikes.length) {
-      Promise.resolve(dataFromServer).then(arrOfBikesWithPrice =>
-        setArrOfBikes(arrOfBikesWithPrice)
-      );
+    if (!availableBikes.length && !rentedBikes.length) {
+      getRequest("bike").then(dataFromServer => {
+        const availableBikesFromServer = [];
+        const rentedBikesFromServer = [];
+        dataFromServer.forEach(({ available, ...bike }) => {
+          available
+            ? availableBikesFromServer.push(bike)
+            : rentedBikesFromServer.push(bike);
+        });
+        setAvailableBikes(availableBikesFromServer);
+        setRentedBikes(rentedBikesFromServer);
+      });
     }
-  }, [arrOfBikes]);
+  }, [availableBikes.length, rentedBikes.length]);
 
-  const onFormSubmit = bikeObj => {
-    bikeObj.id = generateId();
-    setArrOfBikes([...arrOfBikes, bikeObj]);
+  const onBikeCreate = bikeObj => {
+    postRequest("/bike", bikeObj)
+      .then(bikeFromResponse =>
+        setAvailableBikes([...availableBikes, bikeFromResponse])
+      )
+      .catch(e => console.log(e));
   };
 
-  const onCancelRent = id => {
-    const changeList = arrOfBikes.map(bike => {
-      if (bike.id === id) {
-        bike.available = true;
-      }
-      return bike;
-    });
-    setArrOfBikes(changeList);
+  const onCancelRent = bike => {
+    putRequest("/bike", { ...bike, available: true })
+      .then(response => {
+        if (response !== "success") {
+          throw Error(response);
+        }
+        const filteredBikes = rentedBikes.filter(
+          item => item._id !== bike._id
+        );
+        setAvailableBikes([...availableBikes, bike]);
+        setRentedBikes(filteredBikes);
+      })
+      .catch(e => console.log(e));
   };
-  const onDeleteBike = id => {};
-  const onRent = id => {
-    /* const changeList = arrOfBikes.map(bike =>
-      bike.id === id ? (bike.available = false) : bike
-    );
-    setArrOfBikes(changeList);*/
+  const onDeleteBike = _id => {
+    deleteRequest("/bike", { _id })
+      .then(response => {
+        if (response !== "success") {
+          throw new Error(response);
+        }
+        const filteredBikes = availableBikes.filter(
+          item => item._id !== _id
+        );
+        setAvailableBikes(filteredBikes);
+      })
+      .catch(e => console.log(e));
+  };
+  const onRent = bike => {
+    putRequest("/bike", { ...bike, available: false })
+      .then(responseBike => {
+        const filteredBikes = availableBikes.filter(
+          item => item._id !== responseBike._id
+        );
+        setAvailableBikes(filteredBikes);
+        setRentedBikes([...rentedBikes, bike]);
+      })
+      .catch(e => console.log(e));
   };
 
   return (
     <StyledApp>
       <h1>Awesome Bike Rental</h1>
-      <CreateRentForm onFormSubmit={onFormSubmit} />
+      <CreateRentForm onBikeCreate={onBikeCreate} />
       <Rents
-        arrOfBikes={arrOfBikes}
+        availableBikes={availableBikes}
+        rentedBikes={rentedBikes}
         onCancelRent={onCancelRent}
         onDeleteBike={onDeleteBike}
         onRent={onRent}

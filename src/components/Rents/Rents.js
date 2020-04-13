@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyledItem } from "./Rents.styles";
 import { StyledButton } from "../../styles/index.styles";
-import { calculatePrice, toFloatNumber } from "../../utiles";
+import { calculatePrice, reduceBikePrice, toFloatNumber } from "../../utiles";
 import Modal from "./Modal/Modal";
 import SpanWithDiscount from "./SpanWithDiscount/SpanWithDiscount";
 
@@ -20,29 +20,12 @@ const Rents = ({
 
   useEffect(() => {
     if (rentedBikes.length) {
-      const { price, discountPrice } = rentedBikes.reduce(
-        (
-          { price: currentPrice, discountPrice: currentDiscountPrice },
-          { takenDate, pricePerHour }
-        ) => {
-          const { price, discountPrice } = calculatePrice({
-            takenDate,
-            pricePerHour
-          });
-          return discountPrice
-            ? {
-                price: currentPrice + Number(price),
-                discountPrice: currentDiscountPrice + Number(discountPrice)
-              }
-            : {
-                price: currentPrice + Number(price),
-                discountPrice: currentDiscountPrice + Number(price)
-              };
-        },
-        { price: 0, discountPrice: 0 }
-      );
-      setTotalDiscountPrice(toFloatNumber(discountPrice));
+      const { price, discountPrice } = rentedBikes.reduce(reduceBikePrice, {
+        price: 0,
+        discountPrice: 0
+      });
       setTotalPrice(toFloatNumber(price));
+      setTotalDiscountPrice(toFloatNumber(discountPrice));
 
       const timeout = setInterval(
         () => setDebounceCounter(debounceCounter + 1),

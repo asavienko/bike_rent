@@ -11,3 +11,22 @@ export const filterBikeUtil = function(id) {
   const currentBikeId = id;
   return item => item._id !== currentBikeId;
 };
+
+export const reduceBikePrice = (
+  { price: currentPrice, discountPrice: currentDiscountPrice },
+  { takenDate, pricePerHour }
+) => {
+  const { price, discountPrice } = calculatePrice({
+    takenDate,
+    pricePerHour
+  });
+  return discountPrice
+    ? {
+        price: currentPrice + Number(price),
+        discountPrice: currentDiscountPrice + Number(discountPrice)
+      }
+    : {
+        price: currentPrice + Number(price),
+        discountPrice: currentDiscountPrice + Number(price)
+      };
+};

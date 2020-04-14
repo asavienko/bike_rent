@@ -7,7 +7,7 @@ export const calculatePrice = ({ takenDate, pricePerHour }) => {
     ? { price: toFloatNumber(price), discountPrice: toFloatNumber(price / 2) }
     : { price: toFloatNumber(price) };
 };
-export const filterBikeUtil = function(id) {
+export const excludeChosenItem = function(id) {
   const currentBikeId = id;
   return item => item._id !== currentBikeId;
 };

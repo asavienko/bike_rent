@@ -12,17 +12,15 @@
     "express": "^4.17.1",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.7",
+    "nodemon": "^2.0.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "nodemon server.js"
+    "startUi": "react-scripts start",
+    "startServer": "nodemon server.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -38,8 +36,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.3"
   }
 }

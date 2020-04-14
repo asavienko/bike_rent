@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyledItem } from "./Rents.styles";
 import { StyledButton } from "../../styles/index.styles";
-import { calculatePrice, reduceBikePrice, toFloatNumber } from "../../utiles";
+import { calculatePrice, reduceBikePrice, toFloatNumber } from "../../utils";
 import Modal from "./Modal/Modal";
 import SpanWithDiscount from "./SpanWithDiscount/SpanWithDiscount";
 

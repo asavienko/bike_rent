@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { StyledForm, StyledItemWrapper } from "./CreateRentForm.styles";
 import { StyledButton } from "../../styles/index.styles";
-import { toFloatNumber } from "../../utiles";
+import { toFloatNumber } from "../../utils";
 
 const CreateRentForm = ({ onBikeCreate }) => {
   const [bikeName, setBikeName] = useState("");
   const [selectedType, setSelectedType] = useState("Mountain");
-  const [price, setPrice] = useState(toFloatNumber(0)); //the reason of using toFloatNumber is to visualize default float number in input
+  const [price, setPrice] = useState(toFloatNumber(0));
 
   const onNameChanged = e => setBikeName(e.target.value);
   const onTypeChanged = e => setSelectedType(e.target.value);

@@ -7,8 +7,8 @@ import {
   getRequest,
   postRequest,
   putRequest
-} from "./utiles/fetchUtils";
-import { filterBikeUtil } from "./utiles/index";
+} from "./utils/fetchUtils";
+import { excludeChosenItem } from "./utils/index";
 
 const App = () => {
   const [availableBikes, setAvailableBikes] = useState([]);
@@ -41,7 +41,7 @@ const App = () => {
   const onCancelRent = bike => {
     putRequest("/bike", { ...bike, available: true })
       .then(() => {
-        const filteredBikes = rentedBikes.filter(filterBikeUtil(bike._id));
+        const filteredBikes = rentedBikes.filter(excludeChosenItem(bike._id));
         setAvailableBikes([...availableBikes, bike]);
         setRentedBikes(filteredBikes);
       })
@@ -50,7 +50,7 @@ const App = () => {
   const onDeleteBike = _id => {
     deleteRequest("/bike", { _id })
       .then(() => {
-        const filteredBikes = availableBikes.filter(filterBikeUtil(_id));
+        const filteredBikes = availableBikes.filter(excludeChosenItem(_id));
         setAvailableBikes(filteredBikes);
       })
       .catch(e => console.error(e));
@@ -58,7 +58,7 @@ const App = () => {
   const onRent = bike => {
     putRequest("/bike", { ...bike, available: false })
       .then(() => {
-        const filteredBikes = availableBikes.filter(filterBikeUtil(bike._id));
+        const filteredBikes = availableBikes.filter(excludeChosenItem(bike._id));
         setAvailableBikes(filteredBikes);
         setRentedBikes([...rentedBikes, { ...bike, takenDate: new Date() }]);
       })

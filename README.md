@@ -40,4 +40,4 @@ reduceBikePrice() - generates total discount price and total price for array of 
 |        |       |                          | pricePerHour: { type: Number, required: true } |
 |        |       |                          | available: { type: Boolean, default: true },   |
 |        |       |                          | }                                              |
-| DELETE | /bike | deletes chosen bike      |
+| DELETE | /bike | deletes chosen bike      |  {_id}                                         |

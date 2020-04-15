@@ -36,10 +36,9 @@ reduceBikePrice() - generates total discount price and total price for array of 
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
 | GET    | /bike                                     | returns list of bikes                     | none                                           |
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
-| POST   | /bike                                     | create new bike                           | {name: { type: String, required: true },       |
-|        |                                           |                                           |  type: { type: String, required: true },       |
-|        |                                           |                                           |  pricePerHour: { type: Number, required: true }|
-|        |                                           |                                           | }                                              |
+| POST   | /bike                                     | create new bike                           | {name: { type: String, required: true },       
+type: { type: String, required: true },       
+}       |                                       
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
 | PUT    | /bike                                     | updates bikes properties                  | {name: { type: String, required: true },       |
 |        |                                           |                                           |  type: { type: String, required: true },       |

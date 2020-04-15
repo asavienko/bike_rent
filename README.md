@@ -6,7 +6,7 @@ Add .env file in root root directory
 
 ##Running application:
 
-Starting node server npm run `startServer`
+Starting node server npm run `npm run server`
 
 Running development server `npm run start`
 
@@ -32,17 +32,17 @@ reduceBikePrice() - generates total discount price and total price for array of 
 
 | Method | Path                                      |Description                                | Body                                           |
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
-| GET    | /bike/                                    | returns list of bikes                     | none                                           |
+| GET    | /bike                                     | returns list of bikes                     | none                                           |
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
-| POST   | /bike/                                    | create new bike                           | {name: { type: String, required: true },       |
+| POST   | /bike                                     | create new bike                           | {name: { type: String, required: true },       |
 |        |                                           |                                           |  type: { type: String, required: true },       |
 |        |                                           |                                           |  pricePerHour: { type: Number, required: true }|
 |        |                                           |                                           | }                                              |
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
-| PUT    | /bike/                                    | updates bikes properties                  | {name: { type: String, required: true },       |
+| PUT    | /bike                                     | updates bikes properties                  | {name: { type: String, required: true },       |
 |        |                                           |                                           |  type: { type: String, required: true },       |
 |        |                                           |                                           |  pricePerHour: { type: Number, required: true }|
 |        |                                           |                                           |  available: { type: Boolean, default: true },  |
 |        |                                           |                                           | }                                              |
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
-| DELETE | /bike/                                    |  deletes chosen bike
+| DELETE | /bike                                     |  deletes chosen bike

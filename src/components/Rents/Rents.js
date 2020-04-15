@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyledItem } from "./Rents.styles";
 import { StyledButton } from "../../styles/index.styles";
 import { calculatePrice, reduceBikePrice, toFloatNumber } from "../../utils";
-import Modal from "./Modal/Modal";
-import SpanWithDiscount from "./SpanWithDiscount/SpanWithDiscount";
+import Modal from "./Modal";
+import SpanWithDiscount from "./SpanWithDiscount";
 
 const Rents = ({
   rentedBikes,
@@ -62,7 +62,7 @@ const Rents = ({
     return (
       <StyledItem key={bike._id}>
         <span>
-          {bike.name} / {bike.type} /{" "}
+          {`${bike.name} / ${bike.type} / `}
           <SpanWithDiscount discountPrice={discountPrice} price={price} />
         </span>
         <StyledButton buttonColor="red" onClick={() => onCancelRent(bike)}>
@@ -99,7 +99,7 @@ const Rents = ({
           <span role="img" aria-label="stars">
             🤩
           </span>
-          Your rent (Total:{" "}
+          {`Your rent (Total: `}
           <SpanWithDiscount
             discountPrice={totalDiscountPrice}
             price={totalPrice}

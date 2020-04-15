@@ -19,8 +19,8 @@
     "styled-components": "^5.1.0"
   },
   "scripts": {
-    "startUi": "react-scripts start",
-    "startServer": "nodemon server.js"
+    "start": "react-scripts start",
+    "server": "nodemon server.js"
   },
   "eslintConfig": {
     "extends": "react-app"

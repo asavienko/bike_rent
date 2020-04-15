@@ -10,5 +10,3 @@ const Bike = new Schema({
 });
 
 module.exports = mongoose.model("Bike", Bike);
-
-

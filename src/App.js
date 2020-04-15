@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import CreateRentForm from "./components/CreateRentForm/CreateRentForm";
 import { StyledApp } from "./App.styles";
-import Rents from "./components/Rents/Rents";
+import CreateRentForm from "./components/CreateRentForm";
+import Rents from "./components/Rents";
 import {
   deleteRequest,
   getRequest,
@@ -57,10 +57,12 @@ const App = () => {
   };
   const onRent = bike => {
     putRequest("/bike", { ...bike, available: false })
-      .then(() => {
-        const filteredBikes = availableBikes.filter(excludeChosenItem(bike._id));
+      .then(bikeFromResponse => {
+        const filteredBikes = availableBikes.filter(
+          excludeChosenItem(bike._id)
+        );
         setAvailableBikes(filteredBikes);
-        setRentedBikes([...rentedBikes, { ...bike, takenDate: new Date() }]);
+        setRentedBikes([...rentedBikes, bikeFromResponse]);
       })
       .catch(e => console.error(e));
   };

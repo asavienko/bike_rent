@@ -4,12 +4,12 @@ const Bike = mongoose.model("Bike");
 exports.bikeUpdate = function(req, res, next) {
   const { _id } = req.body;
   if (!_id || typeof _id !== "string") {
-    return next(new Error());
+    return next(Error());
   }
-  Bike.updateOne({ _id }, { ...req.body })
-    .then(response => {
-      console.log(response);
-      res.sendStatus(200);
+  const updatedBike = { ...req.body, takenDate: new Date() };
+  Bike.updateOne({ _id }, updatedBike)
+    .then(() => {
+      res.json(updatedBike);
     })
     .catch(e => next(e));
 };
@@ -22,7 +22,7 @@ exports.bikeDelete = function(req, res, next) {
   }
   Bike.deleteOne({ _id })
     .then(() => {
-      res.sendStatus(200);
+      res.json("ok");
     })
     .catch(e => next(e));
 };

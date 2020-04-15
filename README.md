@@ -1,10 +1,10 @@
-##Before running 
+## Before running 
 
 Add `.env` file in root root directory
 
 `.env` file should contain `MONGODB_URI="YOUR_MONGODB_ACCESS_URI_HERE"`
 
-###Running application:
+## Running application:
 
 Starting node server npm run `npm run server`
 
@@ -13,7 +13,7 @@ Starting node server npm run `npm run server`
 Running development server `npm run start`
 
 
-###Front-end documentation:
+## Front-end documentation:
 
 .style.js - extension keeps styles for styled-components
 
@@ -30,7 +30,7 @@ excludeChosenItem() - callback function for filter. Returns array without chosen
 reduceBikePrice() - generates total discount price and total price for array of bikes 
 
 
-###Beck-end documentation
+## Beck-end documentation
 
 | Method | Path                                      |Description                                | Body                                           |
 | ------ | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
